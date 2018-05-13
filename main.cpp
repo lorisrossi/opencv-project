@@ -1,17 +1,22 @@
 #include "opencv2/opencv.hpp"
-#include "opencv2/highgui/highgui.hpp"
+
+#include "io.hpp"
 
 using namespace cv;
+using namespace std;
 
 int main() {
-    Mat box = Mat::zeros(220, 450, CV_8UC3);
-    namedWindow("Hello!");
-    putText(box, "Hello world!!", Point(50, 50),
-            FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
-    imshow("Hello!", box);
+  string dataset_path = "./dataset";
+  vector<Mat> hbv_imgs, he_imgs, ipcl_imgs, le_imgs;
 
-    // select the window and press a key
-    waitKey(0);
+  cout << "Loading dataset...\n";
 
-    return 0;
+  loadDataset(dataset_path, "Hbv", hbv_imgs);
+  loadDataset(dataset_path, "He", he_imgs);
+  loadDataset(dataset_path, "Ipcl", ipcl_imgs);
+  loadDataset(dataset_path, "Le", le_imgs);
+
+  cout << "Dataset loaded correctly\n";
+
+  return 0;
 }
