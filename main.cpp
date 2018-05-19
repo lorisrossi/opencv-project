@@ -1,6 +1,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "io.hpp"
+#include "hog.hpp"
 
 using namespace cv;
 using namespace std;
@@ -17,6 +18,8 @@ int main() {
   loadDataset(dataset_path, "Le", le_imgs);
 
   cout << "Dataset loaded correctly\n";
+
+  computeHOG(hbv_imgs);
 
   return 0;
 }
