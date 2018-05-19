@@ -6,7 +6,12 @@ using namespace cv;
 void loadDataset(const string &dirname, const string &label, vector<Mat> &imgs, bool show_images) {
   vector<cv::String> files;
   for (char k = '1'; k <= '3'; ++k) {
-    glob(dirname + "/FOLD " + k + '/' + label, files);
+    try {
+      glob(dirname + "/FOLD " + k + '/' + label, files);
+    } catch(exception &e) {
+      cout << "Error loading dataset/FOLD " << k << "\n\nExit\n";
+      exit(1);
+    }
 
     for (size_t i = 0; i < files.size(); ++i) {
       Mat img = imread(files[i]);
@@ -19,6 +24,7 @@ void loadDataset(const string &dirname, const string &label, vector<Mat> &imgs, 
         imshow("image", img);
         waitKey(100);
       }
+      
       imgs.push_back(img);
     }
   }
