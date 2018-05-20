@@ -6,7 +6,7 @@
 using namespace std;
 using namespace cv;
 
-void computeHOG(const vector<Mat> &imgs) {
+void computeHOG(const vector<Mat> &imgs, vector<Mat> &gradients) {
   HOGDescriptor hog;
   hog.winSize = imgs[0].size() / 8 * 8;
   vector<float> descriptors;
@@ -21,11 +21,7 @@ void computeHOG(const vector<Mat> &imgs) {
       
       cvtColor(imgs[i](r), gray, COLOR_BGR2GRAY);
       hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
-
-      if ((i+1) % 10 == 0) {
-        cout << i + 1 << " image has " << descriptors.size() << " descriptors\n";
-      }
-
+      gradients.push_back(Mat(descriptors).t());
     }
   }
 }

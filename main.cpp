@@ -19,7 +19,30 @@ int main() {
 
   cout << "Dataset loaded correctly\n";
 
-  computeHOG(hbv_imgs);
+  vector<Mat> gradients;
+  vector<int> labels;
+
+  computeHOG(hbv_imgs, gradients);
+  labels.insert(labels.end(), hbv_imgs.size(), 1);
+
+  computeHOG(he_imgs, gradients);
+  labels.insert(labels.end(), he_imgs.size(), 2);
+
+  computeHOG(ipcl_imgs, gradients);
+  labels.insert(labels.end(), ipcl_imgs.size(), 3);
+
+  computeHOG(le_imgs, gradients);
+  labels.insert(labels.end(), le_imgs.size(), 4);
+
+  cout << gradients.size() << " gradients inserted\n";
+  cout << labels.size() << " labels inserted\n";
+
+  Mat trainingData = Mat(gradients.size(), gradients[0].cols, CV_32FC1);
+  for (size_t i = 0; i < gradients.size(); ++i) {
+    gradients.at(i).copyTo(trainingData.row(i));
+  }
+
+  cout << trainingData.size() << " training data size\n";
 
   return 0;
 }
