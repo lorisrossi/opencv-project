@@ -10,6 +10,7 @@ void loadDataset(const string &dirname, vector<string> &labels,
   for (size_t j = 0; j < labels.size(); ++j) {
     for (char k = '1'; k <= '2'; ++k) {
       if(type == "test") k = '3';
+      
       try {
         glob(dirname + "/FOLD " + k + '/' + labels.at(j), files);
       } catch (exception &e) {
@@ -18,7 +19,7 @@ void loadDataset(const string &dirname, vector<string> &labels,
       }
 
       for (size_t i = 0; i < files.size(); ++i) {
-        Mat img = imread(files[i]);
+        Mat img = imread(files.at(i));
         if (img.empty()) {
           cout << files.at(i) << " is not valid." << endl;
           continue;
