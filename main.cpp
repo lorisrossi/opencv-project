@@ -31,12 +31,11 @@ int main() {
 
   computeHOG(train_imgs, train_gradients);
   for (size_t i = 0; i < train_imgs.size(); ++i) {
-    cout << train_imgs.size() << endl;
-    train_labels.insert(train_labels.end(), train_imgs[i].size(), ++i);
+    train_labels.insert(train_labels.end(), train_imgs[i].size(), i+1);
   }
   computeHOG(test_imgs, test_gradients);
   for (size_t i = 0; i < test_imgs.size(); ++i) {
-    test_labels.insert(test_labels.end(), test_imgs[i].size(), ++i);
+    test_labels.insert(test_labels.end(), test_imgs[i].size(), i+1);
   }
   
   cout << train_gradients.size() << " train gradients inserted\n";
