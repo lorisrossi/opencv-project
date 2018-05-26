@@ -12,8 +12,7 @@ using namespace std;
 int main() {
   string dataset_path = "./dataset";
   vector<string> classes {"Hbv", "He", "IPCL", "Le"};
-  vector<vector<Mat>> train_imgs(4, vector<Mat>());
-  vector<vector<Mat>> test_imgs(4, vector<Mat>());
+  vector<vector<Mat>> train_imgs(4, vector<Mat>()), test_imgs(4, vector<Mat>());
 
   cout << "Loading dataset..." << flush;
 
