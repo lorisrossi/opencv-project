@@ -5,6 +5,7 @@
 #include "io.hpp"
 #include "svm.hpp"
 
+
 using namespace cv;
 using namespace cv::ml;
 using namespace std;
@@ -12,71 +13,60 @@ using namespace std;
 int main() {
   string dataset_path = "./dataset";
   string svm_pretrained_model = "./svm_pretrained_model";
-  vector<Mat> hbv_imgs, he_imgs, ipcl_imgs, le_imgs;
-  vector<Mat> test_hbv_imgs, test_he_imgs, test_ipcl_imgs, test_le_imgs;
+  vector<string> classes {"Hbv", "He", "IPCL", "Le"};
+  vector<vector<Mat>> train_imgs(4, vector<Mat>());
+  vector<vector<Mat>> test_imgs(4, vector<Mat>());
 
   cout << "Loading dataset...\n";
 
-  loadTrainingDataset(dataset_path, "Hbv", hbv_imgs);
-  loadTrainingDataset(dataset_path, "He", he_imgs);
-  loadTrainingDataset(dataset_path, "IPCL", ipcl_imgs);
-  loadTrainingDataset(dataset_path, "Le", le_imgs);
-
-  loadTestingDataset(dataset_path, "Hbv", test_hbv_imgs);
-  loadTestingDataset(dataset_path, "He", test_he_imgs);
-  loadTestingDataset(dataset_path, "IPCL", test_ipcl_imgs);
-  loadTestingDataset(dataset_path, "Le", test_le_imgs);
+  loadDataset(dataset_path, classes, train_imgs, "train");
+  loadDataset(dataset_path, classes, test_imgs, "test");
 
   cout << "Dataset loaded correctly\n";
 
-  vector<Mat> gradients;
-  vector<int> labels;
-
-  computeHOG(hbv_imgs, gradients);
-  labels.insert(labels.end(), hbv_imgs.size(), 1);
-  computeHOG(he_imgs, gradients);
-  labels.insert(labels.end(), he_imgs.size(), 2);
-  computeHOG(ipcl_imgs, gradients);
-  labels.insert(labels.end(), ipcl_imgs.size(), 3);
-  computeHOG(le_imgs, gradients);
-  labels.insert(labels.end(), le_imgs.size(), 4);
-
+  vector<Mat> train_gradients;
   vector<Mat> test_gradients;
+  vector<int> train_labels;
   vector<int> test_labels;
 
-  computeHOG(test_hbv_imgs, test_gradients);
-  test_labels.insert(test_labels.end(), test_hbv_imgs.size(), 1);
-  computeHOG(test_he_imgs, test_gradients);
-  test_labels.insert(test_labels.end(), test_he_imgs.size(), 2);
-  computeHOG(test_ipcl_imgs, test_gradients);
-  test_labels.insert(test_labels.end(), test_ipcl_imgs.size(), 3);
-  computeHOG(test_le_imgs, test_gradients);
-  test_labels.insert(test_labels.end(), test_le_imgs.size(), 4);
+  computeHOG(train_imgs, train_gradients);
+  for (size_t i = 0; i < train_imgs.size(); ++i) {
+    cout << train_imgs.size() << endl;
+    train_labels.insert(train_labels.end(), train_imgs[i].size(), ++i);
+  }
+  computeHOG(test_imgs, test_gradients);
+  for (size_t i = 0; i < test_imgs.size(); ++i) {
+    test_labels.insert(test_labels.end(), test_imgs[i].size(), ++i);
+  }
+  
+  cout << train_gradients.size() << " train gradients inserted\n";
+  cout << train_labels.size() << " train labels inserted\n";
+  cout << test_gradients.size() << " test gradients inserted\n";
+  cout << test_labels.size() << " test labels inserted\n";
 
-  // cout << gradients.size() << " gradients inserted\n";
-  // cout << labels.size() << " labels inserted\n";
-
-  Mat trainingData = Mat(gradients.size(), gradients[0].cols, CV_32FC1);
-  for (size_t i = 0; i < gradients.size(); ++i) {
-    gradients.at(i).copyTo(trainingData.row(i));
+  Mat trainingData = Mat(train_gradients.size(), train_gradients[0].cols, CV_32FC1);
+  for (size_t i = 0; i < train_gradients.size(); ++i) {
+    train_gradients.at(i).copyTo(trainingData.row(i));
   }
   cout << trainingData.size() << " training data size\n";
 
-  Mat testingData =
-      Mat(test_gradients.size(), test_gradients[0].cols, CV_32FC1);
+  Mat testingData = Mat(test_gradients.size(), test_gradients[0].cols, CV_32FC1);
   for (size_t i = 0; i < test_gradients.size(); ++i) {
     test_gradients.at(i).copyTo(testingData.row(i));
   }
   cout << testingData.size() << " testing data size\n";
 
   cout << "Creating SVM\n";
+
   Ptr<SVM> svm;
   initSvm(svm);
 
   cout << "Training...\n";
-  svm->train(trainingData, ROW_SAMPLE, labels);
+  
+  svm->train(trainingData, ROW_SAMPLE, train_labels);
   
   cout << "Testing...\n";
+  
   unsigned int matches = 0;
   for (size_t i = 0; i < test_labels.size(); ++i) {
     if (svm->predict(testingData.row(i)) == test_labels[i]) ++matches;
