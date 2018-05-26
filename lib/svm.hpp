@@ -1,4 +1,8 @@
-#include <vector>
+#ifndef SVM_HPP
+#define SVM_HPP
+
 #include "opencv2/ml.hpp"
 
-std::vector<float> get_svm_detector(const cv::Ptr<cv::ml::SVM>& svm);
+void initSvm(cv::Ptr<cv::ml::SVM> &svm);
+
+#endif

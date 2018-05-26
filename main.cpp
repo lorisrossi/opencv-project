@@ -1,5 +1,6 @@
+#include <iostream>
+#include <iomanip>
 #include "opencv2/opencv.hpp"
-
 #include "hog.hpp"
 #include "io.hpp"
 #include "svm.hpp"
@@ -68,40 +69,21 @@ int main() {
   }
   cout << testingData.size() << " testing data size\n";
 
-  cout << "Creating SVM...";
-  Ptr<SVM> svm = SVM::create();
-  svm->setCoef0(0.0);
-  svm->setDegree(4);
-  svm->setTermCriteria(
-      TermCriteria(CV_TERMCRIT_ITER + CV_TERMCRIT_EPS, 1000, 1e-3));
-  svm->setGamma(3);
-  // svm->setKernel(SVM::LINEAR);
-  svm->setKernel(SVM::POLY);
-  svm->setNu(0.5);
-  svm->setP(0.1);   // for EPSILON_SVR, epsilon in loss function?
-  svm->setC(0.01);  // From paper, soft classifier
-  // svm->setType(SVM::EPS_SVR);  // C_SVC; // EPSILON_SVR; // may be also
-  // NU_SVR;
-  svm->setType(SVM::C_SVC);
-  // // do regression task
-  cout << "...Training SVM...";
+  cout << "Creating SVM\n";
+  Ptr<SVM> svm;
+  initSvm(svm);
+
+  cout << "Training...\n";
   svm->train(trainingData, ROW_SAMPLE, labels);
-  cout << "...[done]" << endl;
-
-  cout << "Testing..." << endl;
-  int match = 0;
+  
+  cout << "Testing...\n";
+  unsigned int matches = 0;
   for (size_t i = 0; i < test_labels.size(); ++i) {
-    if (svm->predict(testingData.row(i)) == test_labels[i]) ++match;
+    if (svm->predict(testingData.row(i)) == test_labels[i]) ++matches;
   }
-  cout << "match " << match << " on " << test_labels.size() << endl;
-  cout << "Accuracy " << (float(match) / test_labels.size() * 100) << "\%" << endl;
 
-  // HOGDescriptor hog;
-  // hog.winSize = hbv_imgs[0].size() / 8 * 8;
-  // hog.setSVMDetector(get_svm_detector(svm));
-  // hog.save(svm_pretrained_model);
-
-  // test_trained_detector(obj_det_filename, test_dir, videofilename);
+  cout << endl << matches << " matches out of " << test_labels.size() << endl;
+  cout << "Accuracy " << fixed << setprecision(2) << (float(matches) / test_labels.size() * 100) << '%' << endl;
 
   return 0;
 }
