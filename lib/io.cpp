@@ -4,15 +4,12 @@ using namespace std;
 using namespace cv;
 
 void loadDataset(const string &dirname, vector<string> &labels,
-                 vector<vector<Mat>> &imgs, const string &type,
-                 bool show_images) {
+                 vector<vector<vector<Mat>>> &imgs, bool show_images) {
   vector<cv::String> files;
   for (size_t j = 0; j < labels.size(); ++j) {
-    for (char k = '1'; k <= '2'; ++k) {
-      if(type == "test") k = '3';
-      
+    for (char k = 1; k <= 3; ++k) {
       try {
-        glob(dirname + "/FOLD " + k + '/' + labels.at(j), files);
+        glob(dirname + "/FOLD " + to_string(k) + '/' + labels.at(j), files);
       } catch (exception &e) {
         cout << "Error loading dataset/FOLD " << k << "\n\nExit\n";
         exit(1);
@@ -29,8 +26,7 @@ void loadDataset(const string &dirname, vector<string> &labels,
           imshow("image", img);
           waitKey(100);
         }
-
-        imgs.at(j).push_back(img);
+        imgs.at(k - 1).at(j).push_back(img);
       }
     }
   }
