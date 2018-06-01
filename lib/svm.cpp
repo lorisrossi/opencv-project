@@ -1,4 +1,8 @@
 #include "svm.hpp"
+#include <iomanip>
+#include <vector>
+#include "opencv2/imgproc.hpp"
+#include "opencv2/objdetect.hpp"
 
 #ifndef CV_TERMCRIT_ITER
 #define CV_TERMCRIT_ITER 1
@@ -8,6 +12,7 @@
 #define CV_TERMCRIT_EPS 2
 #endif
 
+using namespace std;
 using namespace cv;
 using namespace cv::ml;
 
@@ -23,4 +28,48 @@ void initSvm(Ptr<SVM> &svm) {
   svm->setP(0.1);
   svm->setC(0.01);
   svm->setType(SVM::NU_SVC);
+}
+
+void crossValidation(cv::Ptr<cv::ml::SVM> &svm, vector<Mat> data,
+                     vector<vector<int>> labels) {
+  unsigned int final_accuracy = 0;
+
+  for (uint8_t k = 0; k < 3; ++k) {
+    Mat train_data, test_data;
+    vector<int> train_labels, test_labels;
+    cout << "Epoch " << k + 1 << endl;
+
+    train_data.push_back(data.at(k));
+    train_data.push_back(data.at((k + 1) % 2));
+    train_labels.insert(train_labels.end(), labels.at(k).begin(),
+                        labels.at(k).end());
+    train_labels.insert(train_labels.end(), labels.at((k + 1) % 2).begin(),
+                        labels.at((k + 1) % 2).end());
+    test_data.push_back(data.at((k + 2) % 2));
+    test_labels.insert(test_labels.end(), labels.at((k + 2) % 2).begin(),
+                       labels.at((k + 2) % 2).end());
+
+    // cout << "train_data size " << train_data.size() << endl;
+    // cout << "train_labels size " << train_labels.size() << endl;
+    // cout << "test_data size " << test_data.size() << endl;
+    // cout << "test_labels size " << test_labels.size() << endl;
+
+    cout << "Training..." << flush;
+
+    svm->train(train_data, ROW_SAMPLE, train_labels);
+
+    cout << "  Testing...\n";
+
+    unsigned int matches = 0;
+    for (size_t i = 0; i < test_labels.size(); ++i) {
+      if (svm->predict(test_data.row(i)) == test_labels[i]) ++matches;
+    }
+
+    cout << endl << matches << " matches out of " << test_labels.size() << endl;
+    cout << "Accuracy " << fixed << setprecision(2)
+         << (float(matches) / test_labels.size() * 100) << '%' << endl;
+    final_accuracy = final_accuracy + float(matches) / test_labels.size() * 100;
+  }
+
+  cout << "Total Accuracy " << float(final_accuracy) / 3 << '%' << endl;
 }

@@ -46,6 +46,6 @@ void computeHOG(vector<vector<vector<Mat>>> &imgs,
     for (size_t i = 0; i < gradients.size(); ++i) {
       gradients.at(k).at(i).copyTo(data_for_svm.at(k).row(i));
     }
-    cout << data_for_svm.at(k).size() << " data size\n";
+    cout << data_for_svm.at(k).size() << "data" << int(k) << " size\n";
   }
 }

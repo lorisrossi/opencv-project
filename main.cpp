@@ -30,25 +30,14 @@ int main() {
 
   // /* SVM */
 
-  // cout << "Init SVM\n";
+  cout << "Init SVM\n";
 
-  // Ptr<SVM> svm;
-  // initSvm(svm);
+  Ptr<SVM> svm;
+  initSvm(svm);
 
-  // cout << "Training..." << flush;
+  cout << "Starting Cross Validation\n";
 
-  // svm->train(train_data, ROW_SAMPLE, train_labels);
-
-  // cout << "  Testing...\n";
-
-  // unsigned int matches = 0;
-  // for (size_t i = 0; i < test_labels.size(); ++i) {
-  //   if (svm->predict(test_data.row(i)) == test_labels[i]) ++matches;
-  // }
-
-  // cout << endl << matches << " matches out of " << test_labels.size() <<
-  // endl; cout << "Accuracy " << fixed << setprecision(2) << (float(matches) /
-  // test_labels.size() * 100) << '%' << endl;
+  crossValidation(svm, data, labels);
 
   return 0;
 }
