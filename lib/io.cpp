@@ -7,7 +7,7 @@ void loadDataset(const string &dirname, vector<string> &labels,
                  vector<vector<vector<Mat>>> &imgs, bool show_images) {
   vector<cv::String> files;
   for (size_t j = 0; j < labels.size(); ++j) {
-    for (char k = 1; k <= 3; ++k) {
+    for (uint8_t k = 1; k <= 3; ++k) {
       try {
         glob(dirname + "/FOLD " + to_string(k) + '/' + labels.at(j), files);
       } catch (exception &e) {

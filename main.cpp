@@ -22,12 +22,11 @@ int main() {
 
   // /* HOG */
 
-  // vector<Mat> train_gradients, test_gradients;
-  // vector<int> train_labels, test_labels;
-  // Mat train_data, test_data;
+  vector<vector<Mat>> gradients(3, vector<Mat>());
+  vector<vector<int>> labels(3, vector<int>());
+  vector<Mat> data(3, Mat());
 
-  // computeHOG(train_imgs, train_gradients, train_labels, train_data);
-  // computeHOG(test_imgs, test_gradients, test_labels, test_data);
+  computeHOG(imgs, gradients, labels, data);
 
   // /* SVM */
 

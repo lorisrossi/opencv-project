@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "opencv2/objdetect.hpp"
 #include "opencv2/imgproc.hpp"
+#include "opencv2/objdetect.hpp"
 
 using namespace std;
 using namespace cv;
@@ -14,12 +14,12 @@ void _computeHOG(const vector<vector<Mat>> &imgs, vector<Mat> &gradients) {
 
   for (size_t j = 0; j < imgs.size(); ++j) {
     for (size_t i = 0; i < imgs.at(j).size(); ++i) {
-      if (imgs.at(j).at(i).rows >= hog.winSize.height && imgs.at(j).at(i).cols >= hog.winSize.width) {
+      if (imgs.at(j).at(i).rows >= hog.winSize.height &&
+          imgs.at(j).at(i).cols >= hog.winSize.width) {
         Rect r = Rect((imgs.at(j).at(i).rows - hog.winSize.height) / 2,
                       (imgs.at(j).at(i).cols - hog.winSize.width) / 2,
-                      hog.winSize.width,
-                      hog.winSize.height);
-        
+                      hog.winSize.width, hog.winSize.height);
+
         cvtColor(imgs.at(j).at(i)(r), gray, COLOR_BGR2GRAY);
         hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
         gradients.push_back(Mat(descriptors).t());
@@ -28,18 +28,24 @@ void _computeHOG(const vector<vector<Mat>> &imgs, vector<Mat> &gradients) {
   }
 }
 
-void computeHOG(vector<vector<Mat>> &imgs, vector<Mat> &gradients, vector<int> &labels, Mat &data_for_svm) {
-  _computeHOG(imgs, gradients);
-  for (size_t i = 0; i < imgs.size(); ++i) {
-    labels.insert(labels.end(), imgs.at(i).size(), i+1);
-  }
+void computeHOG(vector<vector<vector<Mat>>> &imgs,
+                vector<vector<Mat>> &gradients, vector<vector<int>> &labels,
+                vector<Mat> &data_for_svm) {
+  for (uint8_t k = 0; k < 3; ++k) {
+    _computeHOG(imgs.at(k), gradients.at(k));
+    for (size_t i = 0; i < imgs.at(0).size(); ++i) {
+      labels.at(k).insert(labels.at(k).end(), imgs.at(k).at(i).size(), i + 1);
+    }
 
-  cout << gradients.size() << " gradients inserted\n";
-  cout << labels.size() << " labels inserted\n";
-  
-  data_for_svm = Mat(gradients.size(), gradients[0].cols, CV_32FC1);
-  for (size_t i = 0; i < gradients.size(); ++i) {
-    gradients.at(i).copyTo(data_for_svm.row(i));
+    cout << gradients.at(k).size() << " gradients inserted\n";
+    cout << labels.at(k).size() << " labels inserted\n";
+
+    data_for_svm.at(k) =
+        Mat(gradients.at(k).size(), gradients.at(k).at(0).cols, CV_32FC1);
+
+    for (size_t i = 0; i < gradients.size(); ++i) {
+      gradients.at(k).at(i).copyTo(data_for_svm.at(k).row(i));
+    }
+    cout << data_for_svm.at(k).size() << " data size\n";
   }
-  cout << data_for_svm.size() << " data size\n";
 }
