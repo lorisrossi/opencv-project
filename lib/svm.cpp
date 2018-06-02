@@ -40,14 +40,14 @@ void crossValidation(cv::Ptr<cv::ml::SVM> &svm, vector<Mat> data,
     cout << "Epoch " << k + 1 << endl;
 
     train_data.push_back(data.at(k));
-    train_data.push_back(data.at((k + 1) % 2));
+    train_data.push_back(data.at((k + 1) % 3));
     train_labels.insert(train_labels.end(), labels.at(k).begin(),
                         labels.at(k).end());
-    train_labels.insert(train_labels.end(), labels.at((k + 1) % 2).begin(),
-                        labels.at((k + 1) % 2).end());
-    test_data.push_back(data.at((k + 2) % 2));
-    test_labels.insert(test_labels.end(), labels.at((k + 2) % 2).begin(),
-                       labels.at((k + 2) % 2).end());
+    train_labels.insert(train_labels.end(), labels.at((k + 1) % 3).begin(),
+                        labels.at((k + 1) % 3).end());
+    test_data.push_back(data.at((k + 2) % 3));
+    test_labels.insert(test_labels.end(), labels.at((k + 2) % 3).begin(),
+                       labels.at((k + 2) % 3).end());
 
     // cout << "train_data size " << train_data.size() << endl;
     // cout << "train_labels size " << train_labels.size() << endl;

@@ -42,8 +42,8 @@ void computeHOG(vector<vector<vector<Mat>>> &imgs,
 
     data_for_svm.at(k) =
         Mat(gradients.at(k).size(), gradients.at(k).at(0).cols, CV_32FC1);
-
-    for (size_t i = 0; i < gradients.size(); ++i) {
+    
+    for (size_t i = 0; i < gradients.at(k).size(); ++i) {
       gradients.at(k).at(i).copyTo(data_for_svm.at(k).row(i));
     }
     cout << data_for_svm.at(k).size() << "data" << int(k) << " size\n";
