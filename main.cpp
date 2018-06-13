@@ -20,7 +20,7 @@ int main() {
 
   cout << " success!\n";
 
-  // /* HOG */
+  /* HOG */
 
   vector<vector<Mat>> gradients(3, vector<Mat>());
   vector<vector<int>> labels(3, vector<int>());
@@ -28,7 +28,7 @@ int main() {
 
   computeHOG(imgs, gradients, labels, data);
 
-  // /* SVM */
+  /* SVM */
 
   cout << "Init SVM\n";
 
