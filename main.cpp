@@ -18,9 +18,11 @@ int main() {
 
   loadDataset(dataset_path, classes, imgs);
 
-  cout << " success!\n";
+  cout << " success!\n\n";
 
   /* HOG */
+
+  cout << "Computing HOG..." << flush;
 
   vector<vector<Mat>> gradients(3, vector<Mat>());
   vector<vector<int>> labels(3, vector<int>());
@@ -28,9 +30,11 @@ int main() {
 
   computeHOG(imgs, gradients, labels, data);
 
+  cout << " finish\n\n";
+
   /* SVM */
 
-  cout << "Init SVM\n";
+  cout << "Init SVM\n\n";
 
   Ptr<SVM> svm;
   initSvm(svm);
